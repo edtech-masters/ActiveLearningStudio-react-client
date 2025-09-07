@@ -6,7 +6,13 @@ ARG DOMAIN
 ENV DOMAIN_URL=$DOMAIN
 COPY ./package*.json ./
 RUN npm install
-RUN apt-get update && apt-get install -y git
+
+#RUN apt-get update && apt-get install -y git
+RUN sed -i 's|deb.debian.org|archive.debian.org|g; s|security.debian.org|archive.debian.org|g' /etc/apt/sources.list \
+ && apt-get -o Acquire::Check-Valid-Until=false update \
+ && apt-get install -y --no-install-recommends git \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY . .
 #RUN git log --graph -10 --decorate --pretty > log.txt
 
